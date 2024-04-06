@@ -3,7 +3,6 @@ import pytest
 from fast_langdetect import detect_langs
 
 
-
 # region fixtures
 @pytest.fixture()
 def hello_world() -> dict[str, str]:
@@ -60,6 +59,7 @@ def hello_world() -> dict[str, str]:
     }
 
     return hello_world_phrases
+
 
 # endregion
 
