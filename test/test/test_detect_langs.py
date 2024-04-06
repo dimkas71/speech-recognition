@@ -60,7 +60,6 @@ def hello_world() -> dict[str, str]:
 
     return hello_world_phrases
 
-
 # endregion
 
 
