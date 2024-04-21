@@ -1,9 +1,13 @@
-<VoiceDrawerWidget>:
+<VoiceWidget>:
+    orientation: 'vertical'
     BoxLayout:
-        orientation: 'vertical'
-        size: root.size
+        orientation: 'horizontal'
+        ToggleButton:
+            id: voice_btn
+            text: 'Make voice command' if self.state == 'normal' else 'Listening...'
+            size_hint_y: None
+            height: '48dp'
         Label:
-            id: lbl
-            color: 1.0, 1.0, 1.0, 0.9
-            font_size: '20sp'
-            text: 'Current tick: {}'.format(root.counter)
+            text: root.recognized_text
+            size_hint_y: None
+            height: '48dp'
