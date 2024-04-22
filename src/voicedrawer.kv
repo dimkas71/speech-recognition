@@ -7,6 +7,10 @@
             text: 'Make voice command' if self.state == 'normal' else 'Listening...'
             size_hint_y: None
             height: '48dp'
+        TextInput:
+            id: emul_txt
+            size_hint_y: None
+            height: '48dp'
         Label:
             text: root.recognized_text
             size_hint_y: None

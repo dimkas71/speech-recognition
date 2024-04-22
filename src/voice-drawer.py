@@ -1,18 +1,22 @@
 # Uncomment these lines to see all the messages
+import logging
 import random
 import threading
 import time
-from typing import List
 
-# from kivy.logger import Logger
-# import logging
-# Logger.setLevel(logging.INFO)
+from kivy.logger import Logger
+
+from src.command import CommandResolver
+
+Logger.setLevel(logging.INFO)
 
 from kivy.app import App
 from kivy.clock import mainthread
 from kivy.graphics import Color, Rectangle, InstructionGroup
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
+
+
 
 
 class TaggedInstructionGroup(InstructionGroup):
@@ -35,30 +39,34 @@ class VoiceWidget(BoxLayout):
     def on_press(self, instance):
         if not self.event.is_set():
             self.event.set()
-        self._background_thread = threading.Thread(target=self.recognize, args=(instance,))
+        self._background_thread = threading.Thread(target=self.recognize)
         self._background_thread.start()
 
-    def recognize(self, button):
+    def recognize(self):
         time.sleep(2)
-        self.on_recognize()
+        text = self.ids['emul_txt'].text
+        self.on_recognize(text)
 
     @mainthread
-    def on_recognize(self):
-        self.ids['voice_btn'].state = 'normal'
-        self.recognized_text = f'You said: draw rectangle {random.randint(1, 100)}'
-
-        tg = self._find_by_tag("hello")
-        if not tg:
-            group = TaggedInstructionGroup("hello")
-
-            group.add(Color(0., 1., 0.5))
-            group.add(Rectangle(pos=(random.randint(300, 800), random.randint(50, 200)), size=(20, 20)))
-            self._add(group)
-
-            tg = group
-
-        with self.canvas:
-            self.canvas.add(tg)
+    def on_recognize(self, rec_text):
+        Logger.info(f"Command: {rec_text}")
+        command = CommandResolver.resolve(rec_text)
+        self._set_btn_state_to_normal()
+        self._update_recognized_text(f'You said: draw rectangle {random.randint(1, 100)}')
+        #
+        # tg = self._find_by_tag("hello")
+        # if not tg:
+        #     group = TaggedInstructionGroup("hello")
+        #
+        #     group.add(Color(0., 1., 0.5))
+        #     group.add(Rectangle(pos=(random.randint(300, 800), random.randint(50, 200)), size=(20, 20)))
+        #     self._add(group)
+        #
+        #     tg = group
+        #
+        # with self.canvas:
+        #     self.canvas.add(tg)
+        command.execute(self.canvas)
 
     #region operations with tagged instructions
     def _add(self, tagged_group):
@@ -80,9 +88,19 @@ class VoiceWidget(BoxLayout):
                 continue
             self.tagged_instructions.remove(tg)
             break
+
     def _remove_all(self):
         self.tagged_instructions.clear()
-    #end region
+
+    #endregion
+
+    #region internal handlers
+    def _set_btn_state_to_normal(self):
+        self.ids['voice_btn'].state = 'normal'
+
+    def _update_recognized_text(self, new_text):
+        self.recognized_text = new_text
+    #endregion
 
 
 class VoiceDrawerApp(App):
