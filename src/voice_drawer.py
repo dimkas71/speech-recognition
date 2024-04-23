@@ -6,7 +6,7 @@ import time
 from kivy.logger import Logger
 
 from src.command import CommandResolver
-from voice_recognition import GoogleVoiceRecognizer
+from voice_recognition import GoogleVoiceRecognizer, SphinxVoiceRecognizer
 
 Logger.setLevel(logging.INFO)
 
@@ -33,7 +33,7 @@ class VoiceWidget(BoxLayout):
         super().__init__(**kwargs)
         self.ids['voice_btn'].bind(on_press=self.on_press)
         self._background_thread = None
-        self._voice_recognizer = GoogleVoiceRecognizer() #TODO: Add DI support to inject recognizer here...
+        self._voice_recognizer = SphinxVoiceRecognizer() #TODO: Add DI support to inject recognizer here...
 
     def on_press(self, instance):
         if not self.event.is_set():
@@ -43,8 +43,8 @@ class VoiceWidget(BoxLayout):
 
     def recognize(self):
         time.sleep(2)
-        #text = self._voice_recognizer.recognize()
-        text = self.ids['emul_txt'].text
+        text = self._voice_recognizer.recognize()
+        #text = self.ids['emul_txt'].text
         self.on_recognize(text)
 
     @mainthread

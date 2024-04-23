@@ -37,7 +37,8 @@ class CommandResolver():
             return MoveTriangleCommand()
         if command_as_string.strip().lower() == 'move all':
             return MoveAllCommand()
-
+        if command_as_string.strip().lower() == 'move right':
+            return MoveRightCommand()
         else:
             return UnknownCommand()
 
@@ -54,9 +55,8 @@ class DrawLineCommand(Command):
 
     def execute(self, canvas: Canvas):
         with canvas:
-            #TODO: add group name
             Color(0., 1., 0.5, group='line')
-            Line(points=[100, 100, 200, 200], width=2, group='line')
+            Line(points=[100, 100, 200, 200], width=10, group='line')
 
 
 class DrawRectangleCommand(Command):
@@ -64,7 +64,7 @@ class DrawRectangleCommand(Command):
     def execute(self, canvas: Canvas):
         with canvas:
             Color(0., 0.5, 0.8, group='rectangle')
-            Rectangle(pos=(400, 150), size=(20, 20), group='rectangle')
+            Rectangle(pos=(400, 150), size=(120, 120), group='rectangle')
 
 
 class DrawCircleCommand(Command):
@@ -178,6 +178,21 @@ class MoveAllCommand(Command):
                 i.pos = (i.pos[0] + DELTA_UP, i.pos[1] + DELTA_UP)
             elif i.group == 'triangle' and isinstance(i, Triangle):
                 i.points = [p + DELTA_UP for p in i.points]
+
+class MoveRightCommand(Command):
+
+    def execute(self, canvas: Canvas):
+        for i in canvas.children:
+            if i.group == 'line' and isinstance(i, Line):
+                i.points = [p + DELTA_UP for p in i.points] #TODO: make it move right
+            elif i.group == 'circle' and isinstance(i, Ellipse):
+                i.pos = (i.pos[0] + DELTA_UP, i.pos[1])
+            elif i.group == 'rectangle' and isinstance(i, Rectangle):
+                i.pos = (i.pos[0] + DELTA_UP, i.pos[1])
+            elif i.group == 'triangle' and isinstance(i, Triangle):
+                i.points = [p + DELTA_UP for p in i.points] #TODO: make it move right
+
+
 #endregion
 
 class UnknownCommand(Command):
