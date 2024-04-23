@@ -1,22 +1,20 @@
 # Uncomment these lines to see all the messages
 import logging
-import random
 import threading
 import time
 
 from kivy.logger import Logger
 
 from src.command import CommandResolver
+from voice_recognition import GoogleVoiceRecognizer
 
 Logger.setLevel(logging.INFO)
 
 from kivy.app import App
 from kivy.clock import mainthread
-from kivy.graphics import Color, Rectangle, InstructionGroup
+from kivy.graphics import InstructionGroup
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
-
-
 
 
 class TaggedInstructionGroup(InstructionGroup):
@@ -35,6 +33,7 @@ class VoiceWidget(BoxLayout):
         super().__init__(**kwargs)
         self.ids['voice_btn'].bind(on_press=self.on_press)
         self._background_thread = None
+        self._voice_recognizer = GoogleVoiceRecognizer() #TODO: Add DI support to inject recognizer here...
 
     def on_press(self, instance):
         if not self.event.is_set():
@@ -44,6 +43,7 @@ class VoiceWidget(BoxLayout):
 
     def recognize(self):
         time.sleep(2)
+        #text = self._voice_recognizer.recognize()
         text = self.ids['emul_txt'].text
         self.on_recognize(text)
 
@@ -52,7 +52,7 @@ class VoiceWidget(BoxLayout):
         Logger.info(f"Command: {rec_text}")
         command = CommandResolver.resolve(rec_text)
         self._set_btn_state_to_normal()
-        self._update_recognized_text(f'You said: draw rectangle {random.randint(1, 100)}')
+        self._update_recognized_text(f'You said: {rec_text}')
         #
         # tg = self._find_by_tag("hello")
         # if not tg:
